@@ -1,0 +1,36 @@
+class Solution {
+    public List<Integer> replaceNonCoprimes(int[] nums) {
+        List<Integer> stack = new ArrayList<>();
+        
+        for (int num : nums) {
+            int curr = num;
+            
+            // Keep merging while stack top and current number are non-coprime
+            while (!stack.isEmpty()) {
+                int top = stack.get(stack.size() - 1);
+                int g = gcd(top, curr);
+                if (g == 1) break; // coprime → stop merging
+                // merge into LCM
+                curr = lcm(top, curr, g);
+                stack.remove(stack.size() - 1);
+            }
+            
+            stack.add(curr);
+        }
+        
+        return stack;
+    }
+    private int gcd(int a, int b) {
+        while (b != 0) {
+            int temp = a % b;
+            a = b;
+            b = temp;
+        }
+        return a;
+    }
+    
+    private int lcm(int a, int b, int g) {
+        // LCM = (a / gcd) * b
+        return (int)((long)a / g * b); // use long to avoid overflow, then cast back
+    }
+}
