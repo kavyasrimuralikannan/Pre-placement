@@ -1,0 +1,20 @@
+class Solution {
+    public int minimumArea(int[][] grid) {
+       // area is w * h; we need to min area; there is at least one "1" in the grid so min area is 1*1
+       int minHeight = (int) Math.pow(2, 32), maxHeight = 1;
+       int minWidth = (int) Math.pow(2, 32), maxWidth = 1;
+       
+       for (int row = 0; row < grid.length; row++)  { 
+            for (int col = 0; col < grid[0].length; col++) {
+                if (grid[row][col] == 1) {
+                    minHeight = Math.min(minHeight, row);
+                    maxHeight = Math.max(maxHeight, row+1);
+                    minWidth = Math.min(minWidth, col);
+                    maxWidth = Math.max(maxWidth, col+1);
+                }
+            }
+        }
+        
+        return ((maxWidth-minWidth) * (maxHeight-minHeight));
+    }
+}
