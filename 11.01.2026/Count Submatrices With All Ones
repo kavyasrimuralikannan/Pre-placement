@@ -1,0 +1,98 @@
+class Solution {
+    public int numSubmat(int[][] mat) {
+        
+        int m = mat.length;
+        int n = mat[0].length;
+        
+        // for every row, in every column, places the streak maintained.
+        for(int i=0; i<m; i++){
+            int streak = 0;
+            for(int j=0; j<n; j++){
+                if(mat[i][j]==1){
+                    streak++;
+                    mat[i][j] = streak;
+                }else{
+                    streak = 0;
+                }
+            }
+        }
+        
+        //print(mat);
+        
+        int ans = 0;
+
+        // for every column
+        for(int j=0; j<n; j++){
+            
+            //System.out.println("j="+j);
+
+            //In a column, in the rows above i, if we have row streak as x and then above it, we have row streak as some grater than x value, lets say y>x.
+            // then the starting point of matrices in the rows with y streak, should still has to be x.
+            // hence row having x streak is a critical row or a thin connector. And needs to be maintained.
+            Stack<Integer> thin_connectors = new Stack<>();
+            
+            // stores the answers of the previous row.
+            int[] row_answers = new int[m];
+            
+            for(int i=0; i<m; i++){
+                
+                // matrices of ones which end at mat[i][j], needs to be added to ans
+
+                //System.out.print("i="+i+", ");
+                //System.out.print(thin_connectors+" -> ");
+                
+                // while the previous streaks are grater than the current streak, they are of no use, and we have to discard them.
+                while(!thin_connectors.isEmpty() && mat[thin_connectors.peek()][j] >= mat[i][j]){
+                    thin_connectors.pop();
+                }
+
+                // the last row index-1 till where our current row streak, represented by mat[i][j] has to be used, as every streak in between, is grater.
+                int prev_i = -1;
+
+                if(!thin_connectors.isEmpty()){
+                    
+                    // Update prev_i
+                    prev_i = thin_connectors.peek();
+
+                    // from prev_i, till the top most row, our starting points, would be same as those of starting points, when ending point was mat[prev_i][j].
+                    row_answers[i] += row_answers[prev_i];
+                }
+
+                //from [i, prev_i) rows, we have to take mat[i][j] at their streaks
+                row_answers[i] += (i-prev_i)*mat[i][j];
+                
+                // this (i, j) could be the new critical row.
+                thin_connectors.push(i);
+                
+                // update answer.
+                ans += row_answers[i];
+                
+                //System.out.println(thin_connectors);
+                //System.out.println("ans+="+row_answers[i]);
+            }
+        }
+        return ans;
+    }
+
+    // prints matrix mat.
+    private void print(int[][] mat){
+        for(int i=0; i<mat.length; i++){
+            for(int j=0; j<mat[0].length; j++){
+                System.out.print(mat[i][j]+" ");
+            }
+            System.out.println();
+        }
+        System.out.println("-------------------");
+    }
+
+}
+
+/*
+lets say a column after row streak has
+5
+4
+6
+3
+4
+5
+*/
