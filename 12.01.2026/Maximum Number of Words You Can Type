@@ -1,0 +1,32 @@
+class Solution {
+    public int canBeTypedWords(String text, String brokenLetters) {
+        String str[] = text.split(" ");
+        int arr[] = new int[26];
+        
+        // Mark broken letters
+        for (int i = 0; i < brokenLetters.length(); i++) {
+            char ch = brokenLetters.charAt(i);
+            int idx = (int)(ch - 'a');
+            arr[idx] = 1;
+        }
+        
+        int ans = 0;
+        
+        // Check each word
+        for (int i = 0; i < str.length; i++) {
+            String s = str[i];
+            boolean type = true;
+            for (int j = 0; j < s.length(); j++) {
+                if (arr[s.charAt(j) - 'a'] > 0) {
+                    type = false;
+                    break;
+                }
+            }
+            if (type) {
+                ans++;
+            }
+        }
+        
+        return ans;
+    }
+}
