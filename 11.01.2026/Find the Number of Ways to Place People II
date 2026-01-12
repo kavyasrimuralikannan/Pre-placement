@@ -1,0 +1,20 @@
+class Solution {
+    public int numberOfPairs(int[][] points) {
+        Arrays.sort(points, (a,b) -> (b[0] - a[0] != 0)? b[0] - a[0] : a[1] - b[1]);
+        int total = 0;
+
+        for(int i = 0; i < points.length - 1; i++){
+            int minx = Integer.MIN_VALUE, maxx = points[i][0], miny = points[i][1], maxy = Integer.MAX_VALUE;
+            for(int j = i + 1; j < points.length && maxy >= miny; j++){
+                int x = points[j][0], y = points[j][1];
+                if(x >= minx && x <= maxx && y >= miny && y <= maxy){
+                    total++;
+                    maxx = x - 1;
+                    maxy = y - 1;
+                }
+            }
+        }
+
+        return total; 
+    }
+}
