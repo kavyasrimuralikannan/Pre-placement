@@ -1,0 +1,26 @@
+class Solution {
+    public int[] findDiagonalOrder(int[][] mat) {
+        boolean dir = true;
+        int m = mat.length, n = mat[0].length;
+        int[] res = new int[m * n];
+        int idx = 0;
+        for (int i = 0; i <= m + n - 2; i++) {
+            if (dir) {
+                for (int x = i < m ? i : m - 1; x >= 0; x--) {                    
+                    int y = i - x;
+                    if (y >= n) break;
+                    res[idx++] = mat[x][y];
+                }
+                dir = false;
+            } else {
+                for (int y = i < n ? i : n - 1; y >= 0; y--) {                    
+                    int x = i - y;
+                    if (x >= m) break;
+                    res[idx++] = mat[x][y];
+                }
+                dir = true;
+            }
+        }
+        return res;
+    }
+}
