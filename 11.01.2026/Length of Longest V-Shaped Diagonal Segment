@@ -1,0 +1,53 @@
+class Solution {
+
+    int grid_ar = 0;
+    int[][] dir_vec = new int[][]{{-1,1},{1,1},{1,-1},{-1,-1}};
+
+    public int lenOfVDiagonal(int[][] grid) {
+        
+        int ans = 0;
+        grid_ar = grid[0].length * grid.length;
+
+        HashMap<Integer, Integer> hm = new HashMap<>();
+        
+        for(int i=0; i<grid.length; i++){
+            for(int j=0; j<grid[0].length; j++){
+                if(grid[i][j]==1){
+                    ans = Math.max(ans, 1+move(i,j,grid,0,true,false,hm));
+                    ans = Math.max(ans, 1+move(i,j,grid,1,true,false,hm));
+                    ans = Math.max(ans, 1+move(i,j,grid,2,true,false,hm));
+                    ans = Math.max(ans, 1+move(i,j,grid,3,true,false,hm));
+                }
+            }
+        }
+        
+        return ans;
+    }
+
+    private int move(int i, int j, int[][] grid, int dir, boolean two, boolean rotated, HashMap<Integer, Integer> hm){
+
+        int key = i*grid[0].length + j + dir * grid_ar;
+        if(two) key += 4 * grid_ar;
+        if(rotated) key += 8 * grid_ar;
+        
+        if (hm.containsKey(key)) return hm.get(key);
+
+        int r = i + dir_vec[dir][0];
+        int c = j + dir_vec[dir][1];
+
+        if(r<0 || r>=grid.length || c<0 || c>=grid[0].length) return 0;
+
+        //if((two && grid[r][c]==2) || (!two && grid[r][c]==0)) continue;
+        // not of the above
+        if((!two || grid[r][c]!=2) && (two || grid[r][c]!=0)) return 0;
+
+        int ans = move(r,c,grid,dir,!two,rotated,hm);
+
+        if(!rotated) ans = Math.max(ans,move(r,c,grid,(dir+1)%4,!two,true,hm));
+
+        hm.put(key, ans+1);
+
+        return 1 + ans;
+
+    }
+}
