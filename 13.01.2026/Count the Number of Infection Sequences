@@ -1,0 +1,109 @@
+class Solution {
+    //Brute Force
+//    public int numberOfSequence(int n, int[] sick) {
+//        if(sick.length == 0)return 0;
+//
+//        boolean[] sequence = new boolean[n];
+//        Arrays.fill(sequence, false);
+//        Arrays.sort(sick);
+//        int levels = n;
+//        for(int i : sick){
+//            sequence[i] = true;
+//            levels--;
+//        }
+//        HashMap<Integer, List<boolean[]>> levelToSequence = new HashMap<>();
+//        for(int i=0; i<=levels; i++){
+//            levelToSequence.put(i, new ArrayList<>());
+//        }
+//        levelToSequence.get(0).add(sequence);
+//        for(int i=0;i<levels; i++){
+//            List<boolean[]> sequences = levelToSequence.get(i);
+//            for(int j=0; j<sequences.size(); j++){
+//                sequence = sequences.get(j).clone();
+//                System.out.println(sequence.length);
+//                for(int child = 0; child<n; child++){
+//                    System.out.println("CHILD IS " + child + " i is "+ i + " j is " + j);
+//                    if(!sequence[child]){
+//                        //Child is not infected
+//                        //Check if around child any infected
+//                        boolean neighborInfected = false;
+//                        if (child-1>=0 && sequence[child-1]){
+//                            neighborInfected = true;
+//                        }
+//                        if(child+1<n && sequence[child+1]){
+//                            neighborInfected = true;
+//                        }
+//                        if(neighborInfected){
+//                            boolean[] tmp = Arrays.copyOf(sequence,sequence.length);
+//                            tmp[child] = true;
+//                            levelToSequence.get(i+1).add(tmp);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return levelToSequence.get(levels).size();
+//    }
+
+    //PnC Method - Basically Every Sequence can be represented by (FF...)[T(F....F)T](FF....)
+    //                                                               1      2            3
+    // Where F are unsick and T are sick child
+    // So basically we can divide into 3 parts. Part 2 can be there multiple times.
+    // If there are n child and k non-sick child. Out of k if x are in 1 and y in 3 and
+    // for simplicity if only part2 is 1 time then k - x - y in part2, then answer is
+    // kCx * (k-x)Cy * (2^(k-x-y-1) * 1C1).
+    // On Further simplyfing ans is unsick!/(group[0])!(group[1])!.... * 2^(group-1) wherever applicable
+    // use fermants theorem to calculate 1/n! % k. It comes out to be n! ^ (mod-2) % mod.
+    public int numberOfSequence(int n, int[] sick) {
+        if(sick.length == 0)return 0;
+
+        int mod = 1000_000_007;
+        int noOfSickChild = sick.length;
+        int unsick_child = n - noOfSickChild;
+        int firstPartLength = sick[0];
+        int thirdPartLength = n - (sick[noOfSickChild-1]+1);
+        long[] factorial = new long[unsick_child+1];
+        factorial[1] = 1;
+        factorial[0] = 1;
+        for(int i = 2; i<=unsick_child; i++){
+            factorial[i] = (i * factorial[i-1]) % mod;
+        }
+
+        List<Integer> groups = new ArrayList<>();
+        groups.add(firstPartLength);
+        groups.add(thirdPartLength);
+
+        for(int i=1; i<noOfSickChild; i++){
+            if(sick[i] - sick[i-1] - 1 > 0 ) {
+                groups.add(sick[i] - sick[i - 1] - 1);
+            }
+        }
+
+        long cnt = 1;
+        cnt *= factorial[unsick_child];
+        System.out.println(cnt);
+
+        for(int i=0; i<groups.size(); i++){
+            if(groups.get(i) > 0){
+                cnt *= inverserFactFermant(factorial, groups.get(i), mod);
+                cnt %= mod;
+                if(i>1){
+                    cnt *= modPow(2, groups.get(i)-1, mod);
+                    cnt%= mod;
+                }
+            }
+        }
+        return (int)(cnt%mod);
+    }
+
+    private static long modPow(long x, long n, int mod) {
+        if (n == 0)
+            return 1;
+        if (n % 2 == 1)
+            return x * modPow(x % mod, (n - 1), mod) % mod;
+        return modPow(x * x % mod, (n / 2), mod) % mod;
+    }
+    private static long inverserFactFermant(long[] factorial, int n, int mod){
+        return (modPow(factorial[n], mod-2, mod));
+    }
+}
