@@ -1,0 +1,37 @@
+class Solution {
+    public long beautifulSubstrings(String s, int k) {
+        
+        // calculate the periodicity
+        int p = 1;
+        int n = s.length();
+        while(p < n) {
+            if ((p * p) % k == 0) {
+                break;
+            }
+            ++p;
+        }
+
+        int vmc = 0;
+        int vow = 0;
+        Set<Character> vowels = new HashSet<>(Arrays.asList('a', 'e', 'i','o', 'u'));
+        long result = 0;
+        Map<Pair, Integer> map = new HashMap<>();
+        map.put(new Pair(0, 0), 1);
+
+        for (int i = 0; i < n; ++i) {
+            char ch = s.charAt(i);
+            if (vowels.contains(ch)) {
+                vmc += 1;
+                vow = (vow + 1) % p;
+            }
+            else {
+                vmc -= 1;
+            }
+
+            Pair searchKey = new Pair(vmc, vow);
+            result += map.getOrDefault(searchKey, 0);
+            map.put(searchKey, map.getOrDefault(searchKey, 0) + 1);
+        }
+        return result;
+    }
+}
