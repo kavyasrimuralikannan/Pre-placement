@@ -1,0 +1,46 @@
+import java.util.*;
+
+
+public class Solution {
+
+    // h-1 and w-1 places where we can cut
+    // every cut splits the problem into 2 and we can recursively solve them !!!
+
+    // also bottom up ofc to build from prev cases
+    public long sellingWood(int maxH, int maxW, int[][] prices) {
+        for (int[] e : prices) dp[e[0]][e[1]] = (long) e[2];
+
+        for (int h = 1; h <= maxH; h++) {
+            for (int w = 1; w <= maxW; w++) {
+                for (int prevH = 1; prevH <= h / 2; prevH++) {
+                    dp[h][w] = Math.max(dp[h][w], dp[prevH][w] + dp[h - prevH][w]);
+                }
+                for (int prevW = 1; prevW <= w / 2; prevW++) {
+                    dp[h][w] = Math.max(dp[h][w], dp[h][prevW] + dp[h][w - prevW]);
+                }
+            }
+        }
+        return dp[maxH][maxW];
+
+
+//        dp[0][0] = (long) p[0][0];
+//        return recMemo(h, w);
+    }
+
+    //    long recMemo(int h, int w) {
+//        if (dp[h][w] != null) return dp[h][w];
+//
+//        long maxProf = p[h][w];
+//        for (int w2 = 1; w2 <= w / 2; w2++) {
+//            maxProf = Math.max(maxProf, recMemo(h, w2) + recMemo(h, w - w2));
+//        }
+//        for (int h2 = 1; h2 <= h / 2; h2++) {
+//            maxProf = Math.max(maxProf, recMemo(h2, w) + recMemo(h - h2, w));
+//        }
+//        return dp[h][w] = maxProf;
+//    }
+//    int[][] p = new int[201][201];
+//    Long[][] dp = new Long[201][201];
+    long[][] dp = new long[201][201];
+
+}
