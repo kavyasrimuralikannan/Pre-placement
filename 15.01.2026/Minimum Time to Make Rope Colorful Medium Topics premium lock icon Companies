@@ -1,0 +1,35 @@
+class Solution(object):
+    def minCost(self, colors, neededTime):
+        n = len(colors)
+        curr , prev = 1 , 0
+
+        time = 0
+
+        while curr < n:
+            if colors[curr] == colors[prev]:
+                if neededTime[curr] < neededTime[prev]:
+                    time += neededTime[curr]
+                    curr += 1
+
+                else:
+                    time += neededTime[prev]
+                    prev = curr
+                    curr += 1
+                    
+
+
+            else:
+                prev = curr
+                curr += 1
+
+        
+        return time
+
+
+
+        
+        
+
+
+
+        
