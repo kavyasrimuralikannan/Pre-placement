@@ -1,0 +1,47 @@
+class Solution(object):
+    
+    def minOperations(self, nums):
+
+        def gcd(a,b):
+            if a==0:
+                return abs(b)
+            if a<b:
+                a,b = b,a
+            while b:
+                a,b = b,a%b
+            return a
+            
+
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        n = len(nums)
+        num1=0
+        min_gcd = 0
+        for i in range(n):
+            if nums[i]==1:
+                num1+=1
+            min_gcd = gcd(min_gcd,nums[i])
+        if num1>0:
+            return n-num1
+        if min_gcd >1:
+            return -1
+
+        min_len = n 
+        for i in range(n):
+            g = 0
+            for j in range(i,n):
+                g = gcd(g,nums[j])
+                if g==1:
+                    min_len = min(min_len,j-i+1)
+                    break
+
+        return min_len+n-2
+        
+
+
+
+
+                
+        
