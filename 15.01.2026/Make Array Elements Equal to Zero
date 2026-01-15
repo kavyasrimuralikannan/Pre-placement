@@ -1,0 +1,60 @@
+class Solution(object):
+    def countValidSelections(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        n = len(nums)
+        ans = 0
+
+        for start in range(n):
+            if nums[start] != 0:
+                continue
+
+            for direction in [True, False]:
+                arr = nums[:]    
+                idx = start
+                home = idx
+                left = direction
+
+                while idx in range(0, n):
+                    if arr[idx] == 0:
+                        left = not left
+
+                    if left:
+                        idx -= 1
+                        if idx in range(0, n):
+                            if arr[idx] == 0:
+                                while idx >= 0 and arr[idx] == 0:
+                                    idx -= 1
+                                if idx >= 0:
+                                    arr[idx] -= 1
+                                    idx = home
+                                else:
+                                    break
+                            else:
+                                arr[idx] -= 1
+                                idx = home
+                        else:
+                            break
+                    else:
+                        idx += 1
+                        if idx in range(0, n):
+                            if arr[idx] == 0:
+                                while idx < n and arr[idx] == 0:
+                                    idx += 1
+                                if idx < n:
+                                    arr[idx] -= 1
+                                    idx = home
+                                else:
+                                    break
+                            else:
+                                arr[idx] -= 1
+                                idx = home
+                        else:
+                            break
+
+                if all(x == 0 for x in arr):
+                    ans += 1
+
+        return ans
