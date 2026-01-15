@@ -1,0 +1,11 @@
+class Solution(object):
+    def countPartitions(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        the_sum = sum(nums)
+        if the_sum%2==1: return 0
+        n = len(nums)
+        return n-1
+        
