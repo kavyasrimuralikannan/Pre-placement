@@ -1,0 +1,4 @@
+class Solution(object):
+    def smallestNumber(self, n):
+        return int('1'*len(bin(n)[2:]),2)
+        
