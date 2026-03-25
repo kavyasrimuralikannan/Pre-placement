@@ -1,0 +1,70 @@
+class Solution {
+    public int[][] reconstructQueue(int[][] people) {
+        int n = people.length;
+        SegmentTree st = new SegmentTree(n);
+        //sort in ascending order of heights if heights equal then descending order of positions
+        Arrays.sort(people, (a, b) -> ( (a[0] != b[0]) ? (a[0] - b[0]) : (b[1] - a[1]) ));
+        int ans[][] = new int[n][2];
+        for(int p[] : people) {
+            int k = p[1] + 1; //if x persons in front then position needed is x + 1
+            int idx = st.query(0, n - 1, 1, k);
+            ans[idx] = p;
+            st.update(0, n - 1, 1, idx);
+        }
+        return ans;
+    }
+
+    private class SegmentTree {
+        private int seg[];
+
+        public SegmentTree(int n) {
+            seg = new int[4 * n];
+            build(0, n - 1, 1);
+        }
+
+        //for each segment how many empty places are available so 1 -> free 0-> not free
+        //sum will give the total empty places
+        //places will be index in which the people need to be queued
+        private void build(int l, int r, int idx) {
+            if(l == r) {
+                seg[idx] = 1;
+                return;
+            }
+
+            int mid = (l + r) / 2;
+            build(l, mid, 2 * idx);
+            build(mid + 1, r, 2 * idx + 1);
+            seg[idx] = seg[2 * idx] + seg[2 * idx + 1];
+        }
+
+        public int query(int l, int r, int idx, int k) {
+            if(l == r) {
+                return l;
+            }
+
+            int mid = (l + r) / 2;
+            int leftCount = seg[2 * idx];
+            int righCount = seg[2 * idx + 1];
+            // we need at least k empty places or more to place a person 
+            if(k <= leftCount) {
+                return query(l, mid, 2 * idx, k);
+            }else {
+                return query(mid + 1, r, 2 * idx + 1, k - leftCount);
+            }
+        }
+
+        public void update(int l, int r, int idx, int pos) {
+            if(l == r) {
+                seg[idx] = 0;
+                return;
+            }
+            int mid = (l + r) / 2;
+            if(pos <= mid) {
+                update(l, mid, 2 * idx, pos);
+            }else {
+                update(mid + 1, r, 2 * idx + 1, pos);
+            }
+            seg[idx] = seg[2 * idx] + seg[2 * idx + 1];
+        }
+    }
+}
